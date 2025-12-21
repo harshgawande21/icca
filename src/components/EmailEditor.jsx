@@ -96,7 +96,24 @@ const EmailEditor = () => {
   }
 
   const handleSend = () => {
-    alert('Email sent successfully! (Demo mode)')
+    // Copy email content to clipboard
+    const emailContent = `To: ${email.to}
+Subject: ${email.subject}
+
+${email.body}`;
+    
+    navigator.clipboard.writeText(emailContent).then(() => {
+      alert('Email copied to clipboard! Paste it into your email client (Gmail, Outlook, etc.)')
+    }).catch(() => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = emailContent
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      alert('Email copied to clipboard! Paste it into your email client.')
+    })
   }
 
   return (
