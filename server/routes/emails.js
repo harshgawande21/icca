@@ -220,6 +220,14 @@ router.post('/send-direct', async (req, res) => {
       });
     }
     
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_demo_key') {
+      return res.status(500).json({
+        success: false,
+        error: 'Email service not configured. Please contact administrator to set up Resend API key.'
+      });
+    }
+    
     try {
       // Send email using Resend
       const emailData = await resend.emails.send({
@@ -280,7 +288,7 @@ router.post('/send-direct', async (req, res) => {
       if (emailError.message?.includes('API key')) {
         return res.status(500).json({
           success: false,
-          error: 'Email service not configured. Please contact administrator.'
+          error: 'Invalid email service configuration. Please check API key.'
         });
       }
       
