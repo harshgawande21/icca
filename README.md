@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ICCA - Intelligent Client Communication Assistant
 
 A UI-first system that helps teams choose, customize, and send professional emails using template repositories, with smart tone and content suggestions.
@@ -239,3 +240,7 @@ Key tables:
 - **SQL Injection Prevention** with parameterized queries
 - **Security Headers** via Helmet middleware
 - **Input Validation** on all API endpoints
+=======
+# icca
+ **ICCA (Intelligent Client Communication Assistant)** is a comprehensive, full-stack web application designed to streamline and enhance professional email communication for businesses and teams. The platform combines intelligent email composition with a robust template management system, providing users with AI-like suggestions 
+>>>>>>> 80bb8ef4d0f57e4ca764bff95a9ec7279c7227cb
