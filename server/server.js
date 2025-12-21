@@ -41,7 +41,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'ICCA Backend API'
+    service: 'ICCA Backend API',
+    cors_origins: process.env.CORS_ORIGINS || 'not set'
   });
 });
 
