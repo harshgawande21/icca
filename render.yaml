@@ -1,0 +1,24 @@
+{
+  "services": [
+    {
+      "type": "web",
+      "name": "icca-backend",
+      "env": "node",
+      "rootDir": "./server",
+      "buildCommand": "npm install",
+      "startCommand": "npm start",
+      "plan": "free",
+      "healthCheckPath": "/health",
+      "envVars": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORT",
+          "value": "10000"
+        }
+      ]
+    }
+  ]
+}
