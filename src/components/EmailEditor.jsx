@@ -95,25 +95,62 @@ const EmailEditor = () => {
     return templates[templateId] || { subject: '', body: '' }
   }
 
-  const handleSend = () => {
-    // Copy email content to clipboard
-    const emailContent = `To: ${email.to}
-Subject: ${email.subject}
-
-${email.body}`;
+  const handleSend = async () => {
+    // Validate required fields
+    if (!email.to || !email.subject || !email.body) {
+      alert('Please fill in all required fields: To, Subject, and Message');
+      return;
+    }
     
-    navigator.clipboard.writeText(emailContent).then(() => {
-      alert('Email copied to clipboard! Paste it into your email client (Gmail, Outlook, etc.)')
-    }).catch(() => {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea')
-      textArea.value = emailContent
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-      alert('Email copied to clipboard! Paste it into your email client.')
-    })
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.to)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    try {
+      // Show sending state
+      const originalText = document.querySelector('.btn-primary').textContent;
+      document.querySelector('.btn-primary').textContent = 'Sending...';
+      document.querySelector('.btn-primary').disabled = true;
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emails/send-direct`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email.to,
+          subject: email.subject,
+          body: email.body,
+          from_name: 'ICCA Assistant'
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`✅ Email sent successfully to ${email.to}!`);
+        // Clear form after successful send
+        setEmail({
+          to: '',
+          subject: '',
+          body: '',
+          selectedTemplate: null
+        });
+      } else {
+        alert(`❌ Failed to send email: ${result.error}`);
+      }
+      
+    } catch (error) {
+      console.error('Send error:', error);
+      alert(`❌ Error sending email: ${error.message}`);
+    } finally {
+      // Reset button state
+      document.querySelector('.btn-primary').textContent = originalText;
+      document.querySelector('.btn-primary').disabled = false;
+    }
   }
 
   return (

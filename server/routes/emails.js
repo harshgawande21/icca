@@ -1,6 +1,10 @@
 const express = require('express');
+const { Resend } = require('resend');
 const router = express.Router();
 const { query } = require('../database/connection');
+
+// Initialize Resend (free tier: 3000 emails/month)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_demo_key');
 
 // Get all email communications
 router.get('/', async (req, res) => {
@@ -190,6 +194,107 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Failed to update email' 
+    });
+  }
+});
+
+// Send email directly (new endpoint for direct sending)
+router.post('/send-direct', async (req, res) => {
+  try {
+    const { to, subject, body, from_name = 'ICCA Assistant' } = req.body;
+    
+    // Validation
+    if (!to || !subject || !body) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: to, subject, body'
+      });
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email address format'
+      });
+    }
+    
+    try {
+      // Send email using Resend
+      const emailData = await resend.emails.send({
+        from: `${from_name} <onboarding@resend.dev>`, // Resend's verified domain
+        to: [to],
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h2 style="color: #1e293b; margin: 0;">📧 Message from ICCA</h2>
+              <p style="color: #64748b; margin: 5px 0 0 0; font-size: 14px;">Intelligent Client Communication Assistant</p>
+            </div>
+            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+              ${body.replace(/\n/g, '<br>')}
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #64748b;">
+              <p style="margin: 0;">This email was sent via ICCA (Intelligent Client Communication Assistant)</p>
+            </div>
+          </div>
+        `,
+        text: body
+      });
+      
+      // Save to database
+      const dbResult = await query(`
+        INSERT INTO email_communications 
+        (sender_id, recipient_email, subject, body, status, sent_at, metadata)
+        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)
+        RETURNING *
+      `, [
+        1, // Default sender ID (since no auth)
+        to,
+        subject,
+        body,
+        'sent',
+        JSON.stringify({ 
+          resend_id: emailData.data?.id,
+          sent_via: 'resend',
+          from_name: from_name
+        })
+      ]);
+      
+      res.json({
+        success: true,
+        message: 'Email sent successfully!',
+        data: {
+          email_id: dbResult.rows[0].id,
+          resend_id: emailData.data?.id,
+          recipient: to,
+          subject: subject
+        }
+      });
+      
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      
+      // Handle specific Resend errors
+      if (emailError.message?.includes('API key')) {
+        return res.status(500).json({
+          success: false,
+          error: 'Email service not configured. Please contact administrator.'
+        });
+      }
+      
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to send email: ' + (emailError.message || 'Unknown error')
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error in send-direct:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to process email sending request' 
     });
   }
 });
