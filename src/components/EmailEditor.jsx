@@ -116,55 +116,81 @@ const EmailEditor = () => {
       sendButton.textContent = 'Sending...';
       sendButton.disabled = true;
       
-      // Try to send via EmailJS (free email service)
-      try {
-        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            service_id: 'service_icca',
-            template_id: 'template_icca',
-            user_id: 'user_icca_public_key',
-            template_params: {
-              to_email: email.to,
-              subject: email.subject,
-              message: email.body,
-              from_name: 'ICCA Assistant'
-            }
-          })
-        });
-
-        if (response.ok) {
-          // Save email to local history
-          const emailRecord = {
-            id: Date.now(),
-            to: email.to,
-            subject: email.subject,
-            body: email.body,
-            sentAt: new Date().toISOString(),
-            status: 'sent'
-          }
-          
-          const existingEmails = JSON.parse(localStorage.getItem('icca_sent_emails') || '[]')
-          const updatedEmails = [emailRecord, ...existingEmails]
-          localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
-          
-          alert(`✅ Email sent successfully to ${email.to}!`);
-          
-          // Clear form
-          setEmail({
-            to: '',
-            subject: '',
-            body: '',
-            selectedTemplate: null
-          });
-          
-          return;
+      console.log('🚀 Sending email to:', email.to);
+      console.log('🔗 API URL:', `https://icca-backend.onrender.com/api/emails/send-direct`);
+      
+      const response = await fetch('https://icca-backend.onrender.com/api/emails/send-direct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email.to,
+          subject: email.subject,
+          body: email.body,
+          from_name: 'ICCA Assistant'
+        })
+      });
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📋 Response headers:', response.headers);
+      
+      // Check if response is ok
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ HTTP Error:', response.status, errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+      
+      // Check if response has content
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('❌ Non-JSON response:', text);
+        throw new Error('Server returned invalid response format');
+      }
+      
+      const result = await response.json();
+      console.log('✅ Response data:', result);
+      
+      if (result.success) {
+        // Save email to local history
+        const emailRecord = {
+          id: Date.now(),
+          to: email.to,
+          subject: email.subject,
+          body: email.body,
+          sentAt: new Date().toISOString(),
+          status: 'sent'
         }
-      } catch (emailError) {
-        console.log('EmailJS failed, falling back to local save');
+        
+        const existingEmails = JSON.parse(localStorage.getItem('icca_sent_emails') || '[]')
+        const updatedEmails = [emailRecord, ...existingEmails]
+        localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
+        
+        alert(`✅ Email sent successfully to ${email.to}!`);
+        
+        // Clear form
+        setEmail({
+          to: '',
+          subject: '',
+          body: '',
+          selectedTemplate: null
+        });
+      } else {
+        console.error('❌ API Error:', result.error);
+        alert(`❌ Failed to send email: ${result.error || 'Unknown error'}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Send error:', error);
+      
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        alert('❌ Cannot connect to email service. Backend might be down.');
+      } else if (error.message.includes('JSON')) {
+        alert('❌ Server error: Invalid response format.');
+      } else {
+        alert(`❌ Error sending email: ${error.message}`);
       }
       
       // Fallback: Save to history only
@@ -181,19 +207,8 @@ const EmailEditor = () => {
       const updatedEmails = [emailRecord, ...existingEmails]
       localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
       
-      alert(`📝 Email saved to history! To send real emails, we need to set up the backend server.`);
+      console.log('📝 Email saved to history as fallback');
       
-      // Clear form
-      setEmail({
-        to: '',
-        subject: '',
-        body: '',
-        selectedTemplate: null
-      });
-      
-    } catch (error) {
-      console.error('Send error:', error);
-      alert(`❌ Error: ${error.message}`);
     } finally {
       // Reset button state
       const sendButton = document.querySelector('.btn-primary');
