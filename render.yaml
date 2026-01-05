@@ -1,24 +1,18 @@
-{
-  "services": [
-    {
-      "type": "web",
-      "name": "icca-backend",
-      "env": "node",
-      "rootDir": "./server",
-      "buildCommand": "npm install",
-      "startCommand": "npm start",
-      "plan": "free",
-      "healthCheckPath": "/health",
-      "envVars": [
-        {
-          "key": "NODE_ENV",
-          "value": "production"
-        },
-        {
-          "key": "PORT",
-          "value": "10000"
-        }
-      ]
-    }
-  ]
-}
+services:
+  - type: web
+    name: icca-backend
+    env: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_7gOSZ0desNAz@ep-dawn-lab-adocbyur-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: JWT_SECRET
+        value: icca-secure-jwt-secret-2024-change-this
+      - key: RESEND_API_KEY
+        value: re_8oNk18Td_GMMu1tieZAz12zGsdonitHPz
+      - key: CORS_ORIGINS
+        value: https://quiet-beijinho-a5ff63.netlify.app
