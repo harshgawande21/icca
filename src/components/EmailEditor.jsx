@@ -152,6 +152,21 @@ const EmailEditor = () => {
       console.log('Response data:', result);
       
       if (result.success) {
+        // Save email to local history
+        const emailRecord = {
+          id: Date.now(),
+          to: email.to,
+          subject: email.subject,
+          body: email.body,
+          sentAt: new Date().toISOString(),
+          status: 'sent'
+        }
+        
+        // Get existing emails from localStorage
+        const existingEmails = JSON.parse(localStorage.getItem('icca_sent_emails') || '[]')
+        const updatedEmails = [emailRecord, ...existingEmails]
+        localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
+        
         alert(`✅ Email sent successfully to ${email.to}!`);
         // Clear form after successful send
         setEmail({
