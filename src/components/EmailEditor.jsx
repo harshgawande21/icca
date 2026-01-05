@@ -117,9 +117,9 @@ const EmailEditor = () => {
       sendButton.disabled = true;
       
       console.log('Sending email to:', email.to);
-      console.log('API URL:', `${import.meta.env.VITE_API_URL}/api/emails/send-direct`);
+      console.log('API URL:', `${import.meta.env.VITE_API_URL}/emails/send-direct`);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/emails/send-direct`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/emails/send-direct`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

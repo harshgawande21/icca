@@ -6,6 +6,15 @@ const { query } = require('../database/connection');
 // Initialize Resend (free tier: 3000 emails/month)
 const resend = new Resend(process.env.RESEND_API_KEY || 're_demo_key');
 
+// Debug route
+router.get('/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Email routes working',
+    resend_configured: !!process.env.RESEND_API_KEY
+  });
+});
+
 // Get all email communications
 router.get('/', async (req, res) => {
   try {

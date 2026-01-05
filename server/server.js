@@ -47,6 +47,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test endpoint for debugging
+app.post('/api/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Test endpoint working',
+    body: req.body 
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/templates', templateRoutes);
