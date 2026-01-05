@@ -2,29 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "src": "server/server.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "server/server.js"
     }
   ],
   "env": {
-    "VITE_API_URL": "@vite_api_url"
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": "@vite_api_url"
-    }
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_7gOSZ0desNAz@ep-dawn-lab-adocbyur-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "JWT_SECRET": "icca-secure-jwt-secret-2024-change-this",
+    "RESEND_API_KEY": "re_8oNk18Td_GMMu1tieZAz12zGsdonitHPz",
+    "CORS_ORIGINS": "https://quiet-beijinho-a5ff63.netlify.app"
   }
 }

@@ -1,32 +1,42 @@
 {
-  "name": "intelligent-client-communication-assistant",
+  "name": "icca-fullstack",
   "version": "1.0.0",
-  "description": "UI-first system that helps teams choose, customize, and send professional emails using template repositories",
+  "description": "Intelligent Client Communication Assistant - Full Stack Application",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "dev:full": "concurrently \"npm run dev\" \"cd server && npm run dev\"",
-    "docker:dev": "docker-compose up --build",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up --build",
-    "setup": "node start-icca.js",
-    "start:backend": "cd server && npm run dev",
-    "start:frontend": "npm run dev"
+    "start": "node index.js",
+    "dev": "cd server && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "npm run build",
+    "install-all": "npm install && cd server && npm install",
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.6",
-    "axios": "^1.6.2",
-    "lucide-react": "^0.263.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "resend": "^6.6.0"
   },
-  "devDependencies": {
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^4.0.0",
-    "concurrently": "^8.2.2",
-    "vite": "^4.3.2"
-  }
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harshgawande21/icca.git"
+  },
+  "keywords": [
+    "email",
+    "communication",
+    "assistant",
+    "templates",
+    "client-management"
+  ],
+  "author": "ICCA Team",
+  "license": "MIT"
 }

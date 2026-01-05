@@ -116,27 +116,74 @@ const EmailEditor = () => {
       sendButton.textContent = 'Sending...';
       sendButton.disabled = true;
       
-      // For now, simulate email sending since backend is down
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Try to send via EmailJS (free email service)
+      try {
+        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            service_id: 'service_icca',
+            template_id: 'template_icca',
+            user_id: 'user_icca_public_key',
+            template_params: {
+              to_email: email.to,
+              subject: email.subject,
+              message: email.body,
+              from_name: 'ICCA Assistant'
+            }
+          })
+        });
+
+        if (response.ok) {
+          // Save email to local history
+          const emailRecord = {
+            id: Date.now(),
+            to: email.to,
+            subject: email.subject,
+            body: email.body,
+            sentAt: new Date().toISOString(),
+            status: 'sent'
+          }
+          
+          const existingEmails = JSON.parse(localStorage.getItem('icca_sent_emails') || '[]')
+          const updatedEmails = [emailRecord, ...existingEmails]
+          localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
+          
+          alert(`✅ Email sent successfully to ${email.to}!`);
+          
+          // Clear form
+          setEmail({
+            to: '',
+            subject: '',
+            body: '',
+            selectedTemplate: null
+          });
+          
+          return;
+        }
+      } catch (emailError) {
+        console.log('EmailJS failed, falling back to local save');
+      }
       
-      // Save email to local history
+      // Fallback: Save to history only
       const emailRecord = {
         id: Date.now(),
         to: email.to,
         subject: email.subject,
         body: email.body,
         sentAt: new Date().toISOString(),
-        status: 'sent'
+        status: 'saved'
       }
       
-      // Get existing emails from localStorage
       const existingEmails = JSON.parse(localStorage.getItem('icca_sent_emails') || '[]')
       const updatedEmails = [emailRecord, ...existingEmails]
       localStorage.setItem('icca_sent_emails', JSON.stringify(updatedEmails))
       
-      alert(`✅ Email saved to history! (Backend temporarily unavailable - email not actually sent)`);
+      alert(`📝 Email saved to history! To send real emails, we need to set up the backend server.`);
       
-      // Clear form after successful send
+      // Clear form
       setEmail({
         to: '',
         subject: '',
