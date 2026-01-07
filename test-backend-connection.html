@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Backend Connection</title>
+</head>
+<body>
+    <h1>Backend Connection Test</h1>
+    <button onclick="testHealth()">Test Health Endpoint</button>
+    <button onclick="testEmailEndpoint()">Test Email Endpoint</button>
+    <div id="results"></div>
+
+    <script>
+        async function testHealth() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing health endpoint...</p>';
+            
+            try {
+                const response = await fetch('https://icca-backend.onrender.com/health');
+                const data = await response.json();
+                results.innerHTML = `<h3>Health Check Result:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<h3>Health Check Error:</h3><p style="color: red;">${error.message}</p>`;
+            }
+        }
+
+        async function testEmailEndpoint() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing email endpoint...</p>';
+            
+            try {
+                const response = await fetch('https://icca-backend.onrender.com/api/emails/test');
+                const data = await response.json();
+                results.innerHTML = `<h3>Email Test Result:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<h3>Email Test Error:</h3><p style="color: red;">${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

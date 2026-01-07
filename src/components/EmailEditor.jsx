@@ -117,9 +117,11 @@ const EmailEditor = () => {
       sendButton.disabled = true;
       
       console.log('🚀 Sending email to:', email.to);
-      console.log('🔗 API URL:', `https://icca-backend.onrender.com/api/emails/send-direct`);
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://icca-backend.onrender.com/api';
+      const fullUrl = `${apiUrl}/emails/send-direct`;
+      console.log('🔗 API URL:', fullUrl);
       
-      const response = await fetch('https://icca-backend.onrender.com/api/emails/send-direct', {
+      const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,9 +186,14 @@ const EmailEditor = () => {
       
     } catch (error) {
       console.error('❌ Send error:', error);
+      console.error('❌ Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
       
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        alert('❌ Cannot connect to email service. Backend might be down.');
+        alert('❌ Cannot connect to email service. Backend might be down or CORS issue.');
       } else if (error.message.includes('JSON')) {
         alert('❌ Server error: Invalid response format.');
       } else {

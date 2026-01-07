@@ -2,19 +2,14 @@ services:
   - type: web
     name: icca-backend
     env: node
-    plan: free
-    rootDir: server
-    buildCommand: npm ci
-    startCommand: npm start
-    healthCheckPath: /health
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: DATABASE_URL
         value: postgresql://neondb_owner:npg_7gOSZ0desNAz@ep-dawn-lab-adocbyur-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-      - key: JWT_SECRET
-        value: icca-secure-jwt-secret-2024-change-this
       - key: RESEND_API_KEY
         value: re_8oNk18Td_GMMu1tieZAz12zGsdonitHPz
+      - key: NODE_ENV
+        value: production
       - key: CORS_ORIGINS
-        value: https://quiet-beijinho-a5ff63.netlify.app
+        value: https://icca-frontend.vercel.app,http://localhost:5173
