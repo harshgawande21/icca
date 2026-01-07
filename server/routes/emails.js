@@ -4,7 +4,7 @@ const router = express.Router();
 const { query } = require('../database/connection');
 
 // Initialize Resend (free tier: 3000 emails/month)
-const resend = new Resend(process.env.RESEND_API_KEY || 're_demo_key');
+const resend = new Resend(process.env.RESEND_API_KEY || 're_8oNk18Td_GMMu1tieZAz12zGsdonitHPz');
 
 // Debug route
 router.get('/test', (req, res) => {
@@ -231,10 +231,7 @@ router.post('/send-direct', async (req, res) => {
     
     // Check if Resend is configured
     if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_demo_key') {
-      return res.status(500).json({
-        success: false,
-        error: 'Email service not configured. Please contact administrator to set up Resend API key.'
-      });
+      console.log('⚠️ Using fallback Resend API key');
     }
     
     try {
