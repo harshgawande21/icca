@@ -26,7 +26,13 @@ app.use(limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:5173', 'https://quiet-beijinho-a5ff63.netlify.app'],
+  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [
+    'http://localhost:5173',
+    'https://icca-frontend.vercel.app',
+    'https://quiet-beijinho-a5ff63.netlify.app',
+    'https://icca-mh1e.vercel.app',
+    'https://icca-kappa.vercel.app'
+  ],
   credentials: true,
   optionsSuccessStatus: 200
 };
