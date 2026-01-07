@@ -1,22 +1,15 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "server/server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server/server.js"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
-    "NODE_ENV": "production",
-    "DATABASE_URL": "postgresql://neondb_owner:npg_7gOSZ0desNAz@ep-dawn-lab-adocbyur-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
-    "JWT_SECRET": "icca-secure-jwt-secret-2024-change-this",
-    "RESEND_API_KEY": "re_8oNk18Td_GMMu1tieZAz12zGsdonitHPz",
-    "CORS_ORIGINS": "https://quiet-beijinho-a5ff63.netlify.app"
+    "VITE_API_URL": "https://icca-backend.onrender.com/api"
   }
 }
