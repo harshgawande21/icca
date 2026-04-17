@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # ICCA - Intelligent Client Communication Assistant
 
 A UI-first system that helps teams choose, customize, and send professional emails using template repositories, with smart tone and content suggestions.
